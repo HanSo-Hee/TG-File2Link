@@ -11,29 +11,62 @@ from pyrogram.enums.parse_mode import ParseMode
 db = Database(Var.DATABASE_URL, Var.SESSION_NAME)
 
 START_TEXT = """
-<i>👋 Hello,</i>{}\n
-<i>I am a Telegram file streaming bot that also creates direct download links.</i>\n
-<i>Tap <b>Help</b> to learn how to use me.</i>\n
-<i><u>𝗪𝗔𝗥𝗡𝗜𝗡𝗚 🚸</u></i>
-<b>🔞 Adult content leads to a permanent ban.</b>\n\n
-<i><b>🍃 Maintained by:</b> @TeleRoidGroup</i>"""
+╭──────────────────╮
+│   <b>👋 Welcome {}!</b>   │
+╰──────────────────╯
+
+<b>About Me:</b>
+<i>I'm a powerful Telegram file streaming bot that converts your files into direct download links.</i>
+
+<b>What I Can Do:</b>
+• Stream files directly via browser
+• Generate instant download links
+• Support for all file types
+
+<b>⚠️ Important Notice:</b>
+<code>Adult content is strictly prohibited and will result in permanent ban.</code>
+
+<i>🍃 Maintained by @TeleRoidGroup</i>"""
 
 HELP_TEXT = """
-<i>- Send me any file or media from Telegram.</i>
-<i>- I will provide an external direct download link.</i>
-<i>- Add me to your channel to attach Direct Download buttons to your posts.</i>
-<i>- Links are fast and temporary (expire after 24 hours).</i>\n
-<u>🔸 𝗪𝗔𝗥𝗡𝗜𝗡𝗚 🚸</u>\n
-<b>🔞 Adult content leads to a permanent ban.</b>\n
-<i>Report issues to the developer:</i> <b>: <a href='https://t.me/TeleRoid14'>[ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ]</a></b>"""
+╭────────────────╮
+│   <b>📚 How to Use</b>   │
+╰────────────────╯
+
+<b>For Personal Use:</b>
+• Send me any file or media
+• Receive instant download link
+• Share the link anywhere
+
+<b>For Channels:</b>
+• Add me as admin to your channel
+• I'll automatically add download buttons to posts
+
+<b>⏱ Link Validity:</b>
+<i>All generated links expire after 24 hours</i>
+
+<b>⚠️ Warning:</b>
+<code>Adult content strictly prohibited - violators will be permanently banned.</code>
+
+<b>Need Help?</b>
+Contact Developer: <a href='https://t.me/TeleRoid14'>Abhishek Kumar</a>"""
 
 ABOUT_TEXT = """
-<b>⚜ Name: FileStreamX</b>\n
-<b>🔸 Version: <a href='https://t.me/MoviesFlixers_DL'>3.0.1</a></b>\n
-<b>🔹 Source: <a href='https://github.com/PredatorHackerzZ/TG-File2Link'>Click here</a></b>\n
-<b>🔸 GitHub: <a href='https://GitHub.com/MrAbhi2k3'>ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ</a></b>\n
-<b>🔹 Developer: <a href='https://telegram.me/OwnYourBotz'>ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ</a></b>\n
-<b>🔸 Last updated: <a href='https://canvapremiumblog.vercel.app'>01 - Jan 2026</a></b>"""
+╭──────────────╮
+│   <b>⚜ About Bot</b>   │
+╰──────────────╯
+
+<b>Bot Name:</b> <code>FileStreamX</code>
+<b>Version:</b> <a href='https://t.me/MoviesFlixers_DL'>3.0.1</a>
+<b>Last Updated:</b> <a href='https://canvapremiumblog.vercel.app'>01 Jan 2026</a>
+
+<b>Developer:</b> <a href='https://telegram.me/OwnYourBotz'>Abhishek Kumar</a>
+<b>GitHub:</b> <a href='https://GitHub.com/MrAbhi2k3'>@MrAbhi2k3</a>
+
+<b>Source Code:</b>
+<a href='https://github.com/PredatorHackerzZ/TG-File2Link'>View on GitHub</a>
+
+<i>Built with ❤️ for the Telegram community</i>"""
 
 START_BUTTONS = InlineKeyboardMarkup(
         [[
@@ -62,19 +95,19 @@ async def cb_data(bot, update):
     if update.data == "home":
         await update.message.edit_text(
             text=START_TEXT.format(update.from_user.mention),
-            link_preview_options=LinkPreviewOptions(disable_web_page_preview=True),
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=START_BUTTONS
         )
     elif update.data == "help":
         await update.message.edit_text(
             text=HELP_TEXT,
-            link_preview_options=LinkPreviewOptions(disable_web_page_preview=True),
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=HELP_BUTTONS
         )
     elif update.data == "about":
         await update.message.edit_text(
             text=ABOUT_TEXT,
-            link_preview_options=LinkPreviewOptions(disable_web_page_preview=True),
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=ABOUT_BUTTONS
         )
     else:
@@ -102,7 +135,7 @@ async def start(b, m):
         await db.add_user(m.from_user.id)
         await b.send_message(
             Var.BIN_CHANNEL,
-            f"**New User Joined:** \n\n__Mʏ Nᴇᴡ Fʀɪᴇɴᴅ__ [{m.from_user.first_name}](tg://user?id={m.from_user.id}) __Sᴛᴀʀᴛᴇᴅ Yᴏᴜʀ Bᴏᴛ !!__"
+            f"**New User Joined**\n\nUser: [{m.from_user.first_name}](tg://user?id={m.from_user.id})\nStatus: Started the bot"
         )
     usr_cmd = m.text.split("_")[-1]
     if usr_cmd == "/start":
@@ -112,18 +145,18 @@ async def start(b, m):
                 if user.status == "kicked":
                     await b.send_message(
                         chat_id=m.chat.id,
-                        text="__Sorry, you are banned from using me. Contact the developer for help.__\n\n@TeleRoid14",
-                        parse_mode=ParseMode.MARKDOWN,
-                        link_preview_options=LinkPreviewOptions(disable_web_page_preview=True)
+                        text="<b>⛔ Access Denied</b>\n\n<i>You have been banned from using this bot.</i>\n\nFor assistance, contact: @TeleRoid14",
+                        parse_mode=ParseMode.HTML,
+                        link_preview_options=LinkPreviewOptions(is_disabled=True)
                     )
                     return
             except UserNotParticipant:
                 await b.send_message(
                     chat_id=m.chat.id,
-                    text="<i>Join my updates channel to use me 🔐</i>",
+                    text="<b>🔐 Subscription Required</b>\n\n<i>Please join our updates channel to use this bot.</i>",
                     reply_markup=InlineKeyboardMarkup(
                         [[
-                            InlineKeyboardButton("JOin Now 🔓", url=f"https://t.me/{Var.UPDATES_CHANNEL}")
+                            InlineKeyboardButton("Join Channel 🔓", url=f"https://t.me/{Var.UPDATES_CHANNEL}")
                             ]]
                     ),
                     parse_mode=ParseMode.HTML
@@ -132,14 +165,14 @@ async def start(b, m):
             except Exception:
                 await b.send_message(
                     chat_id=m.chat.id,
-                    text="<i>Something went wrong. Contact the developer:</i> <b><a href='http://t.me/TeleRoid14'>[ Click here ]</a></b>",
+                    text="<b>⚠️ Error Occurred</b>\n\n<i>Something went wrong. Please contact the developer:</i>\n<a href='http://t.me/TeleRoid14'>Click here for support</a>",
                     parse_mode=ParseMode.HTML,
-                    link_preview_options=LinkPreviewOptions(disable_web_page_preview=True))
+                    link_preview_options=LinkPreviewOptions(is_disabled=True))
                 return
         await m.reply_text(
             text=START_TEXT.format(m.from_user.mention),
             parse_mode=ParseMode.HTML,
-            link_preview_options=LinkPreviewOptions(disable_web_page_preview=True),
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=START_BUTTONS
               )                                                                         
                                                                                        
@@ -151,31 +184,31 @@ async def start(b, m):
                 if user.status == "kicked":
                     await b.send_message(
                         chat_id=m.chat.id,
-                        text="**Sorry, you are banned from using me. Contact @TeleRoid14 for assistance.**",
-                        parse_mode=ParseMode.MARKDOWN,
-                        link_preview_options=LinkPreviewOptions(disable_web_page_preview=True)
+                        text="<b>⛔ Access Denied</b>\n\n<i>You are banned from using this bot.</i>\n\nContact @TeleRoid14 for assistance.",
+                        parse_mode=ParseMode.HTML,
+                        link_preview_options=LinkPreviewOptions(is_disabled=True)
                     )
                     return
             except UserNotParticipant:
                 await b.send_message(
                     chat_id=m.chat.id,
-                    text="**Please join my updates channel to use this bot.**\n\n**Only channel subscribers can use the bot right now due to load.**",
+                    text="<b>🔐 Subscription Required</b>\n\n<i>Please join our updates channel to use this bot.</i>\n\nDue to high server load, only channel subscribers can access the bot.",
                     reply_markup=InlineKeyboardMarkup(
                         [[
-                          InlineKeyboardButton("🤖 Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ", url=f"https://t.me/{Var.UPDATES_CHANNEL}")],
-                         [InlineKeyboardButton("🔄 Refresh / Try Again", url=f"https://t.me/{(await b.get_me()).username}?start=AvishkarPatil_{usr_cmd}")
+                          InlineKeyboardButton("🤖 Join Updates Channel", url=f"https://t.me/{Var.UPDATES_CHANNEL}")],
+                         [InlineKeyboardButton("🔄 Refresh / Try Again", url=f"https://t.me/{(await b.get_me()).username}?start=PredatorHackerzZ_{usr_cmd}")
                         
                         ]]
                     ),
-                    parse_mode=ParseMode.MARKDOWN
+                    parse_mode=ParseMode.HTML
                 )
                 return
             except Exception:
                 await b.send_message(
                     chat_id=m.chat.id,
-                text="**Something went wrong. Contact support:** [ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ](https://t.me/TeleRoid14)",
-                parse_mode=ParseMode.MARKDOWN,
-                link_preview_options=LinkPreviewOptions(disable_web_page_preview=True))
+                text="<b>⚠️ Error Occurred</b>\n\n<i>Something went wrong. Please contact support:</i>\n<a href='https://t.me/TeleRoid14'>Support Group</a>",
+                parse_mode=ParseMode.HTML,
+                link_preview_options=LinkPreviewOptions(is_disabled=True))
         get_msg = await b.get_messages(chat_id=Var.BIN_CHANNEL, message_ids=int(usr_cmd))
         file_name = get_media_file_name(get_msg)
         file_size = humanbytes(get_media_file_size(get_msg))
@@ -187,19 +220,29 @@ async def start(b, m):
                                      file_name)
 
         msg_text ="""
-<i><u>𝗬𝗼𝘂𝗿 𝗟𝗶𝗻𝗸 �s 𝗥𝗲𝗮𝗱ʏ</u></i>\n
-<b>📂 File name :</b> <i>{}</i>\n
-<b>📦 Size :</b> <i>{}</i>\n
-<b>📥 Download :</b> <i>{}</i>\n
-<b>🚸 Note: Links expire in 24 hours</b>\n
-<i>🍃 Maintained by :</i> <b>@AvishkarPatil</b>
+╭────────────────────╮
+│   <b>✅ Link Generated</b>   │
+╰────────────────────╯
+
+<b>📂 File Name:</b>
+<code>{}</code>
+
+<b>📦 File Size:</b>
+<code>{}</code>
+
+<b>📥 Download Link:</b>
+<code>{}</code>
+
+<b>⏱ Validity:</b> <i>24 Hours</i>
+
+<i>🍃 Maintained by @TeleRoidGroup</i>
 """
 
         await m.reply_text(
             text=msg_text.format(file_name, file_size, stream_link),
             parse_mode=ParseMode.HTML,
-            link_preview_options=LinkPreviewOptions(disable_web_page_preview=True),
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Dᴏᴡɴʟᴏᴀᴅ ɴᴏᴡ 📥", url=stream_link)]])
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Download Now 📥", url=stream_link)]])
         )
 
 
@@ -208,7 +251,7 @@ async def start(b, m):
 async def start(bot, update):
     await update.reply_text(
         text=ABOUT_TEXT.format(update.from_user.mention),
-        disable_web_page_preview=True,
+        link_preview_options=LinkPreviewOptions(is_disabled=True),
         reply_markup=ABOUT_BUTTONS
     )
 
@@ -219,7 +262,7 @@ async def help_handler(bot, message):
         await db.add_user(message.from_user.id)
         await bot.send_message(
             Var.BIN_CHANNEL,
-            f"**Nᴇᴡ Usᴇʀ Jᴏɪɴᴇᴅ **\n\n__Mʏ Nᴇᴡ Fʀɪᴇɴᴅ__ [{message.from_user.first_name}](tg://user?id={message.from_user.id}) __Started Your Bot !!__"
+            f"**New User Joined**\n\nUser: [{message.from_user.first_name}](tg://user?id={message.from_user.id})\nStatus: Started the bot"
         )
     if Var.UPDATES_CHANNEL is not None:
         try:
@@ -227,34 +270,34 @@ async def help_handler(bot, message):
             if user.status == "kicked":
                 await bot.send_message(
                     chat_id=message.chat.id,
-                    text="<i>Sᴏʀʀʏ Sɪʀ, Yᴏᴜ ᴀʀᴇ Bᴀɴɴᴇᴅ ᴛᴏ ᴜsᴇ ᴍᴇ. Cᴏɴᴛᴀᴄᴛ ᴛʜᴇ Dᴇᴠᴇʟᴏᴘᴇʀ</i>",
+                    text="<b>⛔ Access Denied</b>\n\n<i>You are banned from using this bot. Contact the developer for assistance.</i>",
                     parse_mode=ParseMode.HTML,
-                    disable_web_page_preview=True
+                    link_preview_options=LinkPreviewOptions(is_disabled=True)
                 )
                 return
         except UserNotParticipant:
             await bot.send_message(
                 chat_id=message.chat.id,
-                text="**Pʟᴇᴀsᴇ Jᴏɪɴ Mʏ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ᴛᴏ ᴜsᴇ ᴛʜɪs Bᴏᴛ!**\n\n__Dᴜᴇ ᴛᴏ Oᴠᴇʀʟᴏᴀᴅ, Oɴʟʏ Cʜᴀɴɴᴇʟ Sᴜʙsᴄʀɪʙᴇʀs ᴄᴀɴ ᴜsᴇ ᴛʜᴇ Bᴏᴛ!__",
+                text="<b>🔐 Subscription Required</b>\n\n<i>Please join our updates channel to use this bot.</i>\n\nDue to high server load, only channel subscribers can access the bot.",
                 reply_markup=InlineKeyboardMarkup(
                     [[
-                        InlineKeyboardButton("🤖 Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ", url=f"https://t.me/{Var.UPDATES_CHANNEL}")
+                        InlineKeyboardButton("🤖 Join Updates Channel", url=f"https://t.me/{Var.UPDATES_CHANNEL}")
                         ]]
                 ),
-                parse_mode=ParseMode.MARKDOWN
+                parse_mode=ParseMode.HTML
             )
             return
         except Exception:
             await bot.send_message(
                 chat_id=message.chat.id,
-                text="__Sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ Wʀᴏɴɢ. Cᴏɴᴛᴀᴄᴛ ᴍᴇ__ [ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ](https://t.me/Avishkarpatil).",
-                parse_mode=ParseMode.MARKDOWN,
-                disable_web_page_preview=True)
+                text="<b>⚠️ Error Occurred</b>\n\n<i>Something went wrong. Please contact:</i>\n<a href='https://t.me/TeleRoid14'>Abhishek Kumar</a>",
+                parse_mode=ParseMode.HTML,
+                link_preview_options=LinkPreviewOptions(is_disabled=True))
             return
     await message.reply_text(
         text=HELP_TEXT,
         parse_mode=ParseMode.HTML,
-        disable_web_page_preview=True,
+        link_preview_options=LinkPreviewOptions(is_disabled=True),
         reply_markup=HELP_BUTTONS
         )
 

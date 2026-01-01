@@ -36,6 +36,13 @@ def get_media_file_name(m):
         return None
 
 
+def get_media_file_name_raw(m):
+    media = m.video or m.document or m.audio
+    if media and media.file_name:
+        return media.file_name
+    return None
+
+
 @StreamBot.on_message(filters.private & (filters.document | filters.video | filters.audio), group=4)
 async def private_receive_handler(c: Client, m: Message):
     if not await db.is_user_exist(m.from_user.id):
@@ -52,7 +59,7 @@ async def private_receive_handler(c: Client, m: Message):
                     chat_id=m.chat.id,
                     text="__Sorry, you are banned from using me.__\n\n**Contact developer @OwnYourBotz for help.**",
                     parse_mode=ParseMode.MARKDOWN,
-                    disable_web_page_preview=True
+                    link_preview_options=LinkPreviewOptions(is_disabled=True)
                 )
                 return
         except UserNotParticipant:
@@ -70,25 +77,26 @@ async def private_receive_handler(c: Client, m: Message):
                 chat_id=m.chat.id,
                 text="**Something went wrong. Contact my admin @OwnYourBotz**",
                 parse_mode=ParseMode.MARKDOWN,
-                disable_web_page_preview=True)
+                link_preview_options=LinkPreviewOptions(is_disabled=True))
             return
     try:
         log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
-        file_name = get_media_file_name(m)
+        file_name_encoded = get_media_file_name(m)
+        file_name_display = get_media_file_name_raw(m) or "Unknown file"
         file_size = humanbytes(get_media_file_size(m))
-        stream_link = "https://{}/{}/{}".format(Var.FQDN, log_msg.id, file_name) if Var.ON_HEROKU or Var.NO_PORT else \
+        stream_link = "https://{}/{}/{}".format(Var.FQDN, log_msg.id, file_name_encoded) if Var.ON_HEROKU or Var.NO_PORT else \
             "http://{}:{}/{}/{}".format(Var.FQDN,
                                     Var.PORT,
                                     log_msg.id,
-                                    file_name)
+                                    file_name_encoded)
 
         msg_text = (
             "<b>Your link is ready!</b>\n\n"
-            "<b>📂 File name:</b> <i>{}</i>\n"
-            "<b>📦 File size:</b> <i>{}</i>\n"
-            "<b>📥 Download:</b> <i>{}</i>\n"
-            "<b>🚸 Note:</b> Permanent link; does not expire.\n"
-            "<i>© @OwnYourBotz</i>"
+            "<b>File:</b> <code>{}</code>\n\n"
+            "<b>Size:</b> <code>{}</code>\n\n"
+            "<b>Download:</b> {}\n\n"
+            "<b>Note:</b> Link Validity: 24 Hours.\n\n"
+            "<i>Powered by @OwnYourBotz</i>"
         )
 
         await log_msg.reply_text(
@@ -103,16 +111,16 @@ async def private_receive_handler(c: Client, m: Message):
             quote=True,
         )
         await m.reply_text(
-            text=msg_text.format(file_name, file_size, stream_link),
-            parse_mode=ParseMode.HTML, 
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Download now 📥", url=stream_link)]]),
+            text=msg_text.format(file_name_display, file_size, stream_link),
+            parse_mode=ParseMode.HTML,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Open download link", url=stream_link)]]),
             quote=True
         )
     except FloodWait as e:
         print(f"Sleeping for {str(e.value)}s")
         await asyncio.sleep(e.value)
-        await c.send_message(chat_id=Var.BIN_CHANNEL, text=f"Got FloodWait of {str(e.value)}s from [{m.from_user.first_name}](tg://user?id={m.from_user.id})\n\n**User ID:** `{str(m.from_user.id)}`", disable_web_page_preview=True, parse_mode=ParseMode.MARKDOWN)
+        await c.send_message(chat_id=Var.BIN_CHANNEL, text=f"Got FloodWait of {str(e.value)}s from [{m.from_user.first_name}](tg://user?id={m.from_user.id})\n\n**User ID:** `{str(m.from_user.id)}`", link_preview_options=LinkPreviewOptions(is_disabled=True), parse_mode=ParseMode.MARKDOWN)
 
 
 @StreamBot.on_message(filters.channel & (filters.document | filters.video), group=-1)
@@ -146,5 +154,5 @@ async def channel_receive_handler(bot, broadcast):
                              text=f"Got FloodWait of {str(w.value)}s from {broadcast.chat.title}\n\n**Channel ID:** `{str(broadcast.chat.id)}`",
                              link_preview_options=LinkPreviewOptions(is_disabled=True), parse_mode=ParseMode.MARKDOWN)
     except Exception as e:
-        await bot.send_message(chat_id=Var.BIN_CHANNEL, text=f"**#error_traceback:** `{e}`", disable_web_page_preview=True, parse_mode=ParseMode.MARKDOWN)
+        await bot.send_message(chat_id=Var.BIN_CHANNEL, text=f"**#error_traceback:** `{e}`", link_preview_options=LinkPreviewOptions(is_disabled=True), parse_mode=ParseMode.MARKDOWN)
         print(f"Can't edit broadcast message. Error: {e}")

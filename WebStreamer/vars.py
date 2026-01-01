@@ -1,7 +1,8 @@
 # (c) @AvishkarPatil | @EverythingSuckz
 
 import os
-from os import getenv, environ
+from os import environ, getenv
+from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -17,16 +18,29 @@ class Var(object):
     PORT = int(os.environ.get("PORT", 8080))
     BIND_ADRESS = str(getenv('WEB_SERVER_BIND_ADDRESS', '0.0.0.0'))
     OWNER_ID = int(getenv('OWNER_ID', '1287407305'))
-    NO_PORT = bool(getenv('NO_PORT', False))
-    APP_NAME = None
-    if 'DYNO' in environ:
-        ON_HEROKU = True
-        APP_NAME = str(getenv('APP_NAME'))
+    NO_PORT = str(getenv('NO_PORT', 'False')).lower() in ('1', 'true', 'yes', 'on')
+
+    APP_NAME = str(getenv('APP_NAME', '')).strip() or None
+    ON_HEROKU = 'DYNO' in environ
+
+    render_host = getenv('RENDER_EXTERNAL_HOSTNAME')
+    render_url = getenv('RENDER_EXTERNAL_URL')
+    custom_fqdn = getenv('FQDN')
+
+    if custom_fqdn:
+        FQDN = custom_fqdn
+    elif render_host:
+        FQDN = render_host
+    elif render_url:
+        FQDN = urlparse(render_url).netloc
+    elif ON_HEROKU and APP_NAME:
+        FQDN = f"{APP_NAME}.herokuapp.com"
+    elif APP_NAME:
+        FQDN = f"{APP_NAME}.onrender.com"
     else:
-        ON_HEROKU = False
-    FQDN = str(getenv('FQDN', BIND_ADRESS)) if not ON_HEROKU or getenv('FQDN') else APP_NAME+'.onrender.com'
-    URL = "https://{}/".format(FQDN) if ON_HEROKU or NO_PORT else \
-        "http://{}:{}/".format(FQDN, PORT)
+        FQDN = BIND_ADRESS
+
+    URL = "https://{}/".format(FQDN) if NO_PORT or ON_HEROKU else "http://{}:{}/".format(FQDN, PORT)
     DATABASE_URL = str(getenv('DATABASE_URL'))
     PING_INTERVAL = int(getenv('PING_INTERVAL', '500'))
     UPDATES_CHANNEL = str(getenv('UPDATES_CHANNEL', None))

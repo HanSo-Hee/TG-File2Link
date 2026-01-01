@@ -1,10 +1,10 @@
 # (c) @AvishkarPatil | @EverythingSuckz
 
+import os
 from os import getenv, environ
 from dotenv import load_dotenv
 
 load_dotenv()
-
 
 class Var(object):
     API_ID = int(getenv('API_ID'))

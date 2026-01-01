@@ -4,56 +4,56 @@ from WebStreamer.vars import Var
 from WebStreamer.utils.human_readable import humanbytes
 from WebStreamer.utils.database import Database
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, LinkPreviewOptions
 from pyrogram.errors import UserNotParticipant
 from pyrogram.enums.parse_mode import ParseMode
 
 db = Database(Var.DATABASE_URL, Var.SESSION_NAME)
 
 START_TEXT = """
-<i>👋 Hᴇʏ,</i>{}\n
-<i>I'ᴍ Tᴇʟᴇɢʀᴀᴍ Fɪʟᴇs Sᴛʀᴇᴀᴍɪɴɢ Bᴏᴛ ᴀs ᴡᴇʟʟ Dɪʀᴇᴄᴛ Lɪɴᴋs Gᴇɴᴇʀᴀᴛᴇ</i>\n
-<i>Cʟɪᴄᴋ ᴏɴ Hᴇʟᴘ ᴛᴏ ɢᴇᴛ ᴍᴏʀᴇ ɪɴғᴏʀᴍᴀᴛɪᴏɴ</i>\n
+<i>👋 Hello,</i>{}\n
+<i>I am a Telegram file streaming bot that also creates direct download links.</i>\n
+<i>Tap <b>Help</b> to learn how to use me.</i>\n
 <i><u>𝗪𝗔𝗥𝗡𝗜𝗡𝗚 🚸</u></i>
-<b>🔞 Pʀᴏɴ ᴄᴏɴᴛᴇɴᴛꜱ ʟᴇᴀᴅꜱ ᴛᴏ ᴘᴇʀᴍᴀɴᴇɴᴛ ʙᴀɴ ʏᴏᴜ.</b>\n\n
-<i><b>🍃 Bᴏᴛ Mᴀɪɴᴛᴀɪɴᴇᴅ Bʏ :</b>@TeleRoidGroup</i>"""
+<b>🔞 Adult content leads to a permanent ban.</b>\n\n
+<i><b>🍃 Maintained by:</b> @TeleRoidGroup</i>"""
 
 HELP_TEXT = """
-<i>- Sᴇɴᴅ ᴍᴇ ᴀɴʏ ꜰɪʟᴇ (ᴏʀ) ᴍᴇᴅɪᴀ ꜰʀᴏᴍ ᴛᴇʟᴇɢʀᴀᴍ.</i>
-<i>- I ᴡɪʟʟ ᴘʀᴏᴠɪᴅᴇ ᴇxᴛᴇʀɴᴀʟ ᴅɪʀᴇᴄᴛ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ !.</i>
-<i>- Aᴅᴅ Mᴇ ɪɴ ʏᴏᴜʀ Cʜᴀɴɴᴇʟ Fᴏʀ Dɪʀᴇᴄᴛ Dᴏᴡɴʟᴏᴀᴅ Lɪɴᴋs Bᴜᴛᴛᴏɴ</i>
-<i>- Tʜɪs Pᴇʀᴍᴇᴀɴᴛ Lɪɴᴋ Wɪᴛʜ Fᴀsᴛᴇsᴛ Sᴘᴇᴇᴅ</i>\n
+<i>- Send me any file or media from Telegram.</i>
+<i>- I will provide an external direct download link.</i>
+<i>- Add me to your channel to attach Direct Download buttons to your posts.</i>
+<i>- Links are fast and temporary (expire after 24 hours).</i>\n
 <u>🔸 𝗪𝗔𝗥𝗡𝗜𝗡𝗚 🚸</u>\n
-<b>🔞 Pʀᴏɴ ᴄᴏɴᴛᴇɴᴛꜱ ʟᴇᴀᴅꜱ ᴛᴏ ᴘᴇʀᴍᴀɴᴇɴᴛ ʙᴀɴ ʏᴏᴜ.</b>\n
-<i>Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ (ᴏʀ) ʀᴇᴘᴏʀᴛ ʙᴜɢꜱ</i> <b>: <a href='https://t.me/TeleRoid14'>[ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ]</a></b>"""
+<b>🔞 Adult content leads to a permanent ban.</b>\n
+<i>Report issues to the developer:</i> <b>: <a href='https://t.me/TeleRoid14'>[ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ]</a></b>"""
 
 ABOUT_TEXT = """
-<b>⚜ Mʏ ɴᴀᴍᴇ : FileStreamX</b>\n
-<b>🔸Vᴇʀꜱɪᴏɴ : <a href='https://t.me/+t1ko_FOJxhFiOThl'>3.0.1</a></b>\n
-<b>🔹Sᴏᴜʀᴄᴇ : <a href='https://github.com/PredatorHackerzZ'>Cʟɪᴄᴋ Hᴇʀᴇ</a></b>\n
-<b>🔸GitHub : <a href='https://GitHub.com/PredatorHackerzZ'>ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ</a></b>\n
-<b>🔹Dᴇᴠᴇʟᴏᴘᴇʀ : <a href='https://telegram.me/Mrabhi2k3'>ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ </a></b>\n
-<b>🔸Lᴀꜱᴛ ᴜᴘᴅᴀᴛᴇᴅ : <a href='https://telegram.me/Mrabhi2k3'>[ 04 - March - 2023 ] 12:17 ᴀᴍ</a></b>"""
+<b>⚜ Name: FileStreamX</b>\n
+<b>🔸 Version: <a href='https://t.me/MoviesFlixers_DL'>3.0.1</a></b>\n
+<b>🔹 Source: <a href='https://github.com/PredatorHackerzZ/TG-File2Link'>Click here</a></b>\n
+<b>🔸 GitHub: <a href='https://GitHub.com/MrAbhi2k3'>ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ</a></b>\n
+<b>🔹 Developer: <a href='https://telegram.me/OwnYourBotz'>ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ</a></b>\n
+<b>🔸 Last updated: <a href='https://canvapremiumblog.vercel.app'>01 - Jan 2026</a></b>"""
 
 START_BUTTONS = InlineKeyboardMarkup(
         [[
-        InlineKeyboardButton('Hᴇʟᴘ', callback_data='help'),
-        InlineKeyboardButton('Aʙᴏᴜᴛ', callback_data='about'),
-        InlineKeyboardButton('Cʟᴏsᴇ', callback_data='close')
+        InlineKeyboardButton('Help', callback_data='help'),
+        InlineKeyboardButton('About', callback_data='about'),
+        InlineKeyboardButton('Close', callback_data='close')
         ]]
     )
 HELP_BUTTONS = InlineKeyboardMarkup(
         [[
-        InlineKeyboardButton('Hᴏᴍᴇ', callback_data='home'),
-        InlineKeyboardButton('Aʙᴏᴜᴛ', callback_data='about'),
-        InlineKeyboardButton('Cʟᴏsᴇ', callback_data='close')
+        InlineKeyboardButton('Home', callback_data='home'),
+        InlineKeyboardButton('About', callback_data='about'),
+        InlineKeyboardButton('Close', callback_data='close')
         ]]
     )
 ABOUT_BUTTONS = InlineKeyboardMarkup(
         [[
-        InlineKeyboardButton('Hᴏᴍᴇ', callback_data='home'),
-        InlineKeyboardButton('Hᴇʟᴘ', callback_data='help'),
-        InlineKeyboardButton('Cʟᴏsᴇ', callback_data='close')
+        InlineKeyboardButton('Home', callback_data='home'),
+        InlineKeyboardButton('Help', callback_data='help'),
+        InlineKeyboardButton('Close', callback_data='close')
         ]]
     )
 
@@ -62,19 +62,19 @@ async def cb_data(bot, update):
     if update.data == "home":
         await update.message.edit_text(
             text=START_TEXT.format(update.from_user.mention),
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(disable_web_page_preview=True),
             reply_markup=START_BUTTONS
         )
     elif update.data == "help":
         await update.message.edit_text(
             text=HELP_TEXT,
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(disable_web_page_preview=True),
             reply_markup=HELP_BUTTONS
         )
     elif update.data == "about":
         await update.message.edit_text(
             text=ABOUT_TEXT,
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(disable_web_page_preview=True),
             reply_markup=ABOUT_BUTTONS
         )
     else:
@@ -102,7 +102,7 @@ async def start(b, m):
         await db.add_user(m.from_user.id)
         await b.send_message(
             Var.BIN_CHANNEL,
-            f"**Nᴇᴡ Usᴇʀ Jᴏɪɴᴇᴅ:** \n\n__Mʏ Nᴇᴡ Fʀɪᴇɴᴅ__ [{m.from_user.first_name}](tg://user?id={m.from_user.id}) __Sᴛᴀʀᴛᴇᴅ Yᴏᴜʀ Bᴏᴛ !!__"
+            f"**New User Joined:** \n\n__Mʏ Nᴇᴡ Fʀɪᴇɴᴅ__ [{m.from_user.first_name}](tg://user?id={m.from_user.id}) __Sᴛᴀʀᴛᴇᴅ Yᴏᴜʀ Bᴏᴛ !!__"
         )
     usr_cmd = m.text.split("_")[-1]
     if usr_cmd == "/start":
@@ -112,18 +112,18 @@ async def start(b, m):
                 if user.status == "kicked":
                     await b.send_message(
                         chat_id=m.chat.id,
-                        text="__Sᴏʀʀʏ Sɪʀ, Yᴏᴜ ᴀʀᴇ Bᴀɴɴᴇᴅ ᴛᴏ ᴜsᴇ ᴍᴇ. Cᴏɴᴛᴀᴄᴛ ᴛʜᴇ Dᴇᴠᴇʟᴏᴘᴇʀ__\n\n @TeleRoid14 **Tʜᴇʏ Wɪʟʟ Hᴇʟᴘ Yᴏᴜ**",
+                        text="__Sorry, you are banned from using me. Contact the developer for help.__\n\n@TeleRoid14",
                         parse_mode=ParseMode.MARKDOWN,
-                        disable_web_page_preview=True
+                        link_preview_options=LinkPreviewOptions(disable_web_page_preview=True)
                     )
                     return
             except UserNotParticipant:
                 await b.send_message(
                     chat_id=m.chat.id,
-                    text="<i>Jᴏɪɴ ᴍʏ ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜsᴇ ᴍᴇ 🔐</i>",
+                    text="<i>Join my updates channel to use me 🔐</i>",
                     reply_markup=InlineKeyboardMarkup(
                         [[
-                            InlineKeyboardButton("Jᴏɪɴ ɴᴏᴡ 🔓", url=f"https://t.me/{Var.UPDATES_CHANNEL}")
+                            InlineKeyboardButton("JOin Now 🔓", url=f"https://t.me/{Var.UPDATES_CHANNEL}")
                             ]]
                     ),
                     parse_mode=ParseMode.HTML
@@ -132,14 +132,14 @@ async def start(b, m):
             except Exception:
                 await b.send_message(
                     chat_id=m.chat.id,
-                    text="<i>Sᴏᴍᴇᴛʜɪɴɢ ᴡʀᴏɴɢ ᴄᴏɴᴛᴀᴄᴛ ᴍʏ ᴅᴇᴠᴇʟᴏᴘᴇʀ</i> <b><a href='http://t.me/TeleRoid14'>[ ᴄʟɪᴄᴋ ʜᴇʀᴇ ]</a></b>",
+                    text="<i>Something went wrong. Contact the developer:</i> <b><a href='http://t.me/TeleRoid14'>[ Click here ]</a></b>",
                     parse_mode=ParseMode.HTML,
-                    disable_web_page_preview=True)
+                    link_preview_options=LinkPreviewOptions(disable_web_page_preview=True))
                 return
         await m.reply_text(
             text=START_TEXT.format(m.from_user.mention),
             parse_mode=ParseMode.HTML,
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(disable_web_page_preview=True),
             reply_markup=START_BUTTONS
               )                                                                         
                                                                                        
@@ -151,15 +151,15 @@ async def start(b, m):
                 if user.status == "kicked":
                     await b.send_message(
                         chat_id=m.chat.id,
-                        text="**Sᴏʀʀʏ Sɪʀ, Yᴏᴜ ᴀʀᴇ Bᴀɴɴᴇᴅ ᴛᴏ ᴜsᴇ ᴍᴇ. Qᴜɪᴄᴋʟʏ ᴄᴏɴᴛᴀᴄᴛ** @TeleRoid14",
+                        text="**Sorry, you are banned from using me. Contact @TeleRoid14 for assistance.**",
                         parse_mode=ParseMode.MARKDOWN,
-                        disable_web_page_preview=True
+                        link_preview_options=LinkPreviewOptions(disable_web_page_preview=True)
                     )
                     return
             except UserNotParticipant:
                 await b.send_message(
                     chat_id=m.chat.id,
-                    text="**Pʟᴇᴀsᴇ Jᴏɪɴ Mʏ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ᴛᴏ ᴜsᴇ ᴛʜɪs Bᴏᴛ**!\n\n**Dᴜᴇ ᴛᴏ Oᴠᴇʀʟᴏᴀᴅ, Oɴʟʏ Cʜᴀɴɴᴇʟ Sᴜʙsᴄʀɪʙᴇʀs ᴄᴀɴ ᴜsᴇ ᴛʜᴇ Bᴏᴛ**!",
+                    text="**Please join my updates channel to use this bot.**\n\n**Only channel subscribers can use the bot right now due to load.**",
                     reply_markup=InlineKeyboardMarkup(
                         [[
                           InlineKeyboardButton("🤖 Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ", url=f"https://t.me/{Var.UPDATES_CHANNEL}")],
@@ -173,11 +173,9 @@ async def start(b, m):
             except Exception:
                 await b.send_message(
                     chat_id=m.chat.id,
-                    text="**Sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ Wʀᴏɴɢ. Cᴏɴᴛᴀᴄᴛ ᴍᴇ** [ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ](https://t.me/TeleRoid14).",
-                    parse_mode=ParseMode.MARKDOWN,
-                    disable_web_page_preview=True)
-                return
-
+                text="**Something went wrong. Contact support:** [ツAʙʜɪsʜᴇᴋ Kᴜᴍᴀʀ](https://t.me/TeleRoid14)",
+                parse_mode=ParseMode.MARKDOWN,
+                link_preview_options=LinkPreviewOptions(disable_web_page_preview=True))
         get_msg = await b.get_messages(chat_id=Var.BIN_CHANNEL, message_ids=int(usr_cmd))
         file_name = get_media_file_name(get_msg)
         file_size = humanbytes(get_media_file_size(get_msg))
@@ -189,17 +187,18 @@ async def start(b, m):
                                      file_name)
 
         msg_text ="""
-<i><u>𝗬𝗼𝘂𝗿 𝗟𝗶𝗻𝗸 𝗚𝗲𝗻𝗲𝗿𝗮𝘁𝗲𝗱 !</u></i>\n
-<b>📂 Fɪʟᴇ ɴᴀᴍᴇ :</b> <i>{}</i>\n
-<b>📦 Fɪʟᴇ ꜱɪᴢᴇ :</b> <i>{}</i>\n
-<b>📥 Dᴏᴡɴʟᴏᴀᴅ :</b> <i>{}</i>\n
-<b>🚸 Nᴏᴛᴇ : Lɪɴᴋ ᴇxᴘɪʀᴇᴅ ɪɴ 24 ʜᴏᴜʀꜱ</b>\n
-<i>🍃 Bᴏᴛ Mᴀɪɴᴛᴀɪɴᴇᴅ Bʏ :</i> <b>@AvishkarPatil</b>
+<i><u>𝗬𝗼𝘂𝗿 𝗟𝗶𝗻𝗸 �s 𝗥𝗲𝗮𝗱ʏ</u></i>\n
+<b>📂 File name :</b> <i>{}</i>\n
+<b>📦 Size :</b> <i>{}</i>\n
+<b>📥 Download :</b> <i>{}</i>\n
+<b>🚸 Note: Links expire in 24 hours</b>\n
+<i>🍃 Maintained by :</i> <b>@AvishkarPatil</b>
 """
 
         await m.reply_text(
             text=msg_text.format(file_name, file_size, stream_link),
             parse_mode=ParseMode.HTML,
+            link_preview_options=LinkPreviewOptions(disable_web_page_preview=True),
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Dᴏᴡɴʟᴏᴀᴅ ɴᴏᴡ 📥", url=stream_link)]])
         )
 
